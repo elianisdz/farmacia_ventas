@@ -109,18 +109,25 @@ st.markdown(
 # -------------------------------------------------------------------
 st.sidebar.header("📝 Registrar Nueva Venta")
 
-# Formulario con limpieza automática tras enviar (clear_on_submit=True)
-with st.sidebar.form(key="form_venta", clear_on_submit=True):
-  fecha_venta = st.date_input("Fecha de la Venta", value=date.today())
-  producto = st.text_input("Nombre del Producto / Medicamento")
-  cantidad = st.number_input("Cantidad", min_value=1, value=1, step=1)
-  precio_unitario = st.number_input(
-      "Precio Unitario ($)", min_value=0, value=1000, step=500, format="%d"
-  )
-  metodo_pago = st.selectbox(
-      "Forma de Pago", ["Efectivo", "Nequi / Daviplata", "Tarjeta", "Otro"]
-  )
+# Recoger datos fuera del formulario para poder calcular el total en tiempo real
+fecha_venta = st.sidebar.date_input("Fecha de la Venta", value=date.today())
+producto = st.sidebar.text_input("Nombre del Producto / Medicamento")
+cantidad = st.sidebar.number_input("Cantidad", min_value=1, value=1, step=1)
+precio_unitario = st.sidebar.number_input(
+    "Precio Unitario ($)", min_value=0, value=1000, step=500, format="%d"
+)
 
+# Cálculo dinámico del total para que se muestre antes de guardar
+total_parcial = int(cantidad * precio_unitario)
+total_parcial_fmt = f"${total_parcial:,.0f}".replace(",", ".")
+st.sidebar.markdown(f"### 💰 Total a Pagar: **{total_parcial_fmt}**")
+
+metodo_pago = st.sidebar.selectbox(
+    "Forma de Pago", ["Efectivo", "Nequi / Daviplata", "Tarjeta", "Otro"]
+)
+
+# Formulario con botón de envío
+with st.sidebar.form(key="form_venta"):
   guardar = st.form_submit_button("💾 Anotar Venta", type="primary")
 
 if guardar:
@@ -130,7 +137,6 @@ if guardar:
     ahora_hora = datetime.now().strftime("%H:%M:%S")
     fecha_solo_str = fecha_venta.strftime("%Y-%m-%d")
     fecha_hora_str = f"{fecha_solo_str} {ahora_hora}"
-    total_calculado = int(cantidad * precio_unitario)
 
     cursor = conn.cursor()
     cursor.execute(
@@ -144,7 +150,7 @@ if guardar:
             producto,
             int(cantidad),
             int(precio_unitario),
-            total_calculado,
+            total_parcial,
             metodo_pago,
         ),
     )
