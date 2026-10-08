@@ -4,22 +4,42 @@ import pandas as pd
 import streamlit as st
 
 # -------------------------------------------------------------------
-# CONFIGURACIÓN DE CONTRASEÑA (SEGURIDAD)
+# CONFIGURACIÓN DE CONTRASEÑA (LOGIN)
 # -------------------------------------------------------------------
-PASSWORD_CORRECTA = "1234"  # Puedes cambiar "1234" por la contraseña que prefieras
+PASSWORD_CORRECTA = "1234"  # Puedes cambiar "1234" por la clave que quieras
 
-password_ingresada = st.text_input(
-    "🔒 Ingresa la contraseña de acceso:", type="password"
-)
 
-if password_ingresada != PASSWORD_CORRECTA:
-  if password_ingresada != "":
-    st.error("❌ Contraseña incorrecta.")
-  st.warning(
-      "⚠️ Por favor, ingresa la contraseña correcta para ver el sistema de la"
-      " droguería."
-  )
-  st.stop()  # Detiene la ejecución para que no se muestre nada más
+def verificar_password():
+  # Si ya está autenticado en la sesión, no volvemos a pedirla
+  if st.session_state.get("password_correcta", False):
+    return True
+
+  # Creamos un formulario centrado para el login
+  st.markdown("<br><br><br>", unsafe_allow_html=True)
+  col1, col2, col3 = st.columns([1, 2, 1])
+
+  with col2:
+    st.markdown("### 🔐 Acceso Restringido - Droguería")
+    with st.form("form_login"):
+      input_pass = st.text_input(
+          "Ingrese la contraseña de acceso:", type="password"
+      )
+      btn_login = st.form_submit_button("Entrar", type="primary")
+
+      if btn_login:
+        if input_pass == PASSWORD_CORRECTA:
+          st.session_state["password_correcta"] = True
+          st.rerun()
+        else:
+          st.error("❌ Contraseña incorrecta.")
+
+  return False
+
+
+# Si la contraseña no es correcta, detenemos la app aquí
+if not verificar_password():
+  st.stop()
+
 
 # -------------------------------------------------------------------
 # CONFIGURACIÓN DE LA PÁGINA WEB
