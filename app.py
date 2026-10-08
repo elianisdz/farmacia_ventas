@@ -19,7 +19,11 @@ def verificar_password():
   col1, col2, col3 = st.columns([1, 2, 1])
 
   with col2:
-    st.markdown("### 🔐 Acceso Restringido - Droguería")
+    st.markdown(
+        "### 🔐 Acceso Restringido - <span"
+        ' style="color: #2980b9;">Droguería Valentina</span>',
+        unsafe_allow_html=True,
+    )
     with st.form("form_login"):
       input_pass = st.text_input(
           "Ingrese la contraseña de acceso:", type="password"
@@ -45,7 +49,9 @@ if not verificar_password():
 # CONFIGURACIÓN DE LA PÁGINA WEB
 # -------------------------------------------------------------------
 st.set_page_config(
-    page_title="Registro de Ventas - Droguería", page_icon="💊", layout="wide"
+    page_title="Registro de Ventas - Droguería Valentina",
+    page_icon="💊",
+    layout="wide",
 )
 
 # Estilo CSS estricto para centrar absolutamente todo en la tabla (cuerpo y encabezados)
@@ -92,7 +98,11 @@ def conectar_db():
 
 conn = conectar_db()
 
-st.title("💊 Registro de Ventas - Droguería")
+st.markdown(
+    "💊 ## Registro de Ventas - <span"
+    ' style="color: #2980b9;">Droguería Valentina</span>',
+    unsafe_allow_html=True,
+)
 
 # -------------------------------------------------------------------
 # BARRA LATERAL: FORMULARIO AUTOMÁTICO
